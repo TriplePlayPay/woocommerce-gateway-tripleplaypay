@@ -8,7 +8,11 @@
 # How to install
 ```bash
 # First, you must install Wordpress and the WooCommerce plugin
-cd .../wp-content/plugins # navigate to the plugins folder
-git clone https://github.com/TriplePlayPay/woocommerce.git # clone this repository
+# navigate to the plugins folder
+cd .../wp-content/plugins 
+# clone this repository
+git clone https://github.com/TriplePlayPay/woocommerce.git 
 # all done!
 ```
+- Go to your Admin page, Under plugins, and activate "Triple Play Pay WooCommerce Gateway"
+- To configure the payment page, activate the "Triple Play Pay" payment gateway, and click ""

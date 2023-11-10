@@ -11,7 +11,7 @@
 # navigate to the plugins folder
 cd .../wp-content/plugins 
 # clone this repository
-git clone https://github.com/TriplePlayPay/woocommerce.git 
+git clone https://github.com/TriplePlayPay/tripleplaypay-woocommerce-gateway.git
 # all done!
 ```
 - Go to your Admin page, under plugins, and activate "Triple Play Pay WooCommerce Gateway"

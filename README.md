@@ -14,5 +14,5 @@ cd .../wp-content/plugins
 git clone https://github.com/TriplePlayPay/woocommerce.git 
 # all done!
 ```
-- Go to your Admin page, Under plugins, and activate "Triple Play Pay WooCommerce Gateway"
-- To configure the payment page, activate the "Triple Play Pay" payment gateway, and click ""
+- Go to your Admin page, under plugins, and activate "Triple Play Pay WooCommerce Gateway"
+- To configure the payment page, go to WooCommerce settings, under the payments tab, activate the "Triple Play Pay" payment gateway, and click "Finish set up"

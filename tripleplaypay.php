@@ -5,7 +5,7 @@
  * Description: Take payments through the Triple Play Pay iframe
  * Author: Triple Play Pay
  * Author URI: https://www.tripleplaypay.com/api
- * Version: 1.0.0
+ * Version: 1.0.1
  */
 
 

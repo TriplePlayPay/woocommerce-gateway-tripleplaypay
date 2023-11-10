@@ -187,8 +187,18 @@ function tripleplaypay_init_gateway_class() {
         }
 
         public function process_payment( $order_id ) {
+
             $order = wc_get_order($order_id);
-            $order.payment_complete();
+            $order->payment_complete();
+            $order->reduce_order_stock();
+            $order->add_order_note('Thank you!', true);
+            
+            WC()->cart->empty_cart();
+ 
+			return array(
+				'result' => 'success',
+				'redirect' => $this->get_return_url($order),
+			);
         }
     }
 }

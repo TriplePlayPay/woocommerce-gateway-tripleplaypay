@@ -34,17 +34,23 @@ function tripleplaypay_init_gateway_class() {
             $this->init_form_fields();
             $this->init_settings();
 
-            $this->apikey = $this->get_option('apikey') || NAN;
-            $this->domain = $this->get_option('environment');
+            $this->apikey = $this->get_option('apikey');
+            if ($this->apikey == NULL) {
+                $this->apikey = 'TESTAPIKEY';
+            }
+
+            $this->domain = $this->get_option('environment'); // default to sandbox if not selected
+            if ($this->domain == NULL) {
+                $this->domain = 'sandbox';
+            }
 
             $this->phone_option = $this->get_option('phoneoption');
             $this->full_name = $this->get_option('fullname');
             $this->address = $this->get_option('address');
             $this->zip_mode = $this->get_option('zipmode');
-            $this->email_mode = $this->get_option('emailmode');
 
             $this->payment_type = $this->get_option('paymenttype');
-            $this->payment_options = ['credit_card'];
+            $this->payment_options = ['credit_card', 'digital'];
 
             if ($this->get_option('bank') == 'yes')
                 array_push($this->payment_options, 'bank');
@@ -63,6 +69,12 @@ function tripleplaypay_init_gateway_class() {
                     'type' => 'checkbox',
                     'default' => 'no'
                 ],
+                'bank' => [
+                    'title' => 'Bank / ACH Payments',
+                    'description' => 'Allow the iframe to take banking info as payment',
+                    'type' => 'checkbox',
+                    'default' => 'no'
+                ],
                 'environment' => [
                     'title' => 'Gateway Environment',
                     'description' => 'Testing environment transactions will not be charged',
@@ -70,7 +82,8 @@ function tripleplaypay_init_gateway_class() {
                     'options' => [
                         'sandbox' => 'Testing (Development)',
                         'www' => 'Live (Production)'
-                    ]
+                    ],
+                    'default' => 'sandbox'
                 ],
                 'apikey' => [
                     'title' => 'Triple Play Pay API Key',
@@ -83,23 +96,8 @@ function tripleplaypay_init_gateway_class() {
                     'type' => 'select',
                     'options' => [
                         'charge' => 'Charge',
-                    ]
-                ],
-                'bank' => [
-                    'title' => 'Bank / ACH Payments',
-                    'description' => 'Allow the iframe to take banking info as payment',
-                    'type' => 'checkbox',
-                    'default' => 'no'
-                ],
-                'emailmode' => [
-                    'title' => 'Enable Email',
-                    'description' => 'Choose how the Email field behaves',
-                    'type' => 'select',
-                    'options' => [
-                        'required' => 'Required',
-                        'optional' => 'Optional',
-                        'disabled' => 'Disabled',
-                    ]
+                    ],
+                    'default' => 'charge'
                 ],
                 'zipmode' => [
                     'title' => 'Enable ZipCode',
@@ -108,34 +106,8 @@ function tripleplaypay_init_gateway_class() {
                     'options' => [
                         'required' => 'Required',
                         'disabled' => 'Disabled'
-                    ]
-                ],
-                'phoneoption' => [
-                    'title' => 'Enable Phone Number',
-                    'description' => 'Choose whether to ask for a phone number or not',
-                    'type' => 'select',
-                    'options' => [
-                        'required' => 'Required',
-                        'disabled' => 'Disabled'
-                    ]
-                ],
-                'fullname' => [
-                    'title' => 'Enable Full Name',
-                    'description' => 'Choose whether or not to ask for the name',
-                    'type' => 'select',
-                    'options' => [
-                        true => 'Required',
-                        NULL => 'Disabled'
-                    ]
-                ],
-                'address' => [
-                    'title' => 'Enable Address',
-                    'description' => 'Choose whether or not to ask for a billing address',
-                    'type' => 'select',
-                    'options' => [
-                        true => 'Required',
-                        NULL => 'Disabled'
-                    ]
+                    ],
+                    'default' => 'disabled'
                 ]
             ];
         }
@@ -151,21 +123,17 @@ function tripleplaypay_init_gateway_class() {
             <div id="tripleplaypay-gateway" style="padding: 25px"></div>
             <script src="https://<?php echo $this->domain; ?>.tripleplaypay.com/static/js/triple.js"></script>
             <script>
-                document.querySelector('#place_order').style.display = 'none';;
+                document.querySelector('#place_order').style.display = 'none'; // hide actual submit button
                 new Triple("<?php echo $this->apikey; ?>").generatePaymentForm({
                     containerSelector: "#tripleplaypay-gateway",
                     paymentType: "<?php echo $this->payment_type; ?>",
                     amount: "<?php echo WC()->cart->cart_contents_total; ?>",
                     paymentOptions: <?php echo $this->payment_options; ?>,
-                    emailOptions: "<?php echo $this->email_mode; ?>",
-                    phoneOption: "<?php echo $this->phone_option; ?>",
                     zipMode: "<?php echo $this->zip_mode; ?>",
-                    addressOptions: "<?php echo $this->address; ?>",
-                    showFullName: "<?php echo $this->full_name; ?>",
+                    emailOption: "disabled",
                     savePaymentToken: false,
-                    optIn: false,
-                    onSuccess: () => document.querySelector('#place_order').click(),
-                    onFailure: (error) => { console.log(error); }
+                    onSuccess: () => document.querySelector('#place_order').click(), // process the payment in woo
+                    onFailure: (error) => { alert(error); } // just to get it to work, need to figure out something more graceful
                 });
             </script>
             <?php
@@ -176,17 +144,17 @@ function tripleplaypay_init_gateway_class() {
             if (is_checkout()) { // putting them here makes it load BEFORE payment_fields renders, much cleaner
                 ?>
                 <script>
-                    // overwrite unneeded things
-                    document.addEventListener('DOMContentLoaded', () => {
-                        document.querySelector('#customer_details').style.display = 'none';
-                        document.querySelector('.woocommerce-form-coupon-toggle').style.display = 'none';
-                    });
+                    // scripts for the checkout page
+                    document.addEventListener('DOMContentLoaded', () => {});
                 </script>
                 <?php
             }
         }
 
         public function process_payment( $order_id ) {
+
+            // simply process the payment, should already be good in TPP backend.
+            // TODO: make this sync with TPP to make sure it's good
 
             $order = wc_get_order($order_id);
             $order->payment_complete();
@@ -195,10 +163,10 @@ function tripleplaypay_init_gateway_class() {
             
             WC()->cart->empty_cart();
  
-			return array(
+			return [
 				'result' => 'success',
 				'redirect' => $this->get_return_url($order),
-			);
+            ];
         }
     }
 }

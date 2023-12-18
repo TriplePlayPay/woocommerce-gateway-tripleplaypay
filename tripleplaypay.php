@@ -18,6 +18,9 @@ function tripleplaypay_add_gateway_class() {
 add_action('plugins_loaded', 'tripleplaypay_init_gateway_class');
 function tripleplaypay_init_gateway_class() {
 
+    if (!class_exists("WC_Payment_Gateway"))
+        return;
+
     load_plugin_textdomain('wc-gateway-name', false, dirname( plugin_basename( __FILE__ ) ) . '/languages');
 
     class WC_TriplePlayPay_Gateway extends WC_Payment_Gateway {

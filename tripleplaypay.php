@@ -133,6 +133,7 @@ function tripleplaypay_init_gateway_class() {
                     amount: "<?php echo WC()->cart->cart_contents_total; ?>",
                     paymentOptions: <?php echo $this->payment_options; ?>,
                     zipMode: "<?php echo $this->zip_mode; ?>",
+                    phoneOption: false,
                     emailOption: "disabled",
                     savePaymentToken: false,
                     onSuccess: () => document.querySelector('#place_order').click(), // process the payment in woo

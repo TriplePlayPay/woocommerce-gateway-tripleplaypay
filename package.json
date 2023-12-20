@@ -1,0 +1,18 @@
+{
+  "name": "woocommerce-gateway-tripleplaypay",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@woocommerce/dependency-extraction-webpack-plugin": "^2.3.0",
+    "@woocommerce/eslint-plugin": "^2.2.0",
+    "@wordpress/env": "^9.0.0",
+    "@wordpress/scripts": "^26.19.0",
+    "node-wp-i18n": "^1.2.7"
+  }
+}

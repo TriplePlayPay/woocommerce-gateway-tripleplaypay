@@ -16,6 +16,7 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
         $this->available_currencies = (array) apply_filters( 'woocommerce_gateway_payfast_available_currencies', [ 'USD' ] );
         $this->supports = ['products'];
 
+        $this->has_fields = true;
         $this->init_form_fields();
         $this->init_settings();
 

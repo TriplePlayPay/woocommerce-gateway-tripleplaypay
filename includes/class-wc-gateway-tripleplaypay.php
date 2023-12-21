@@ -16,7 +16,6 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
         $this->available_currencies = (array) apply_filters( 'woocommerce_gateway_payfast_available_currencies', [ 'USD' ] );
         $this->supports = ['products'];
 
-        $this->has_fields = true;
         $this->init_form_fields();
         $this->init_settings();
 
@@ -33,10 +32,11 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
         $this->zip_mode = $this->get_option('zipmode');
 
         $this->payment_type = $this->get_option('paymenttype');
-        $this->payment_options = ['credit_card'];
+        $this->payment_options = "['credit_card']";
         
+        add_action('woocommerce_receipt_' . $this->id, [$this, 'receipt_page']);
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, [$this, 'process_admin_options']);
-        add_action('wp_enqueue_scripts', [$this, 'payment_scripts']);
+        //add_action('wp_enqueue_scripts', [$this, 'payment_scripts']);
     }
 
     public function init_form_fields() {
@@ -119,32 +119,52 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
         do_action('woocommerce_credit_card_form_end', $this->id);
     }
 
-    public function payment_scripts() {
-        if (is_checkout()) { // putting them here makes it load BEFORE payment_fields renders, much cleaner
-            ?>
-            <script>
-                // scripts for the checkout page
-                document.addEventListener('DOMContentLoaded', () => {});
-            </script>
-            <?php
+	public function receipt_page( $order_id ) {
+        $order = wc_get_order($order_id);
+        $amount = $order->get_total();
+
+        $key = "tripleplaypay_payment_success";
+        if (isset($_GET[$key]) && $_GET[$key] === 'true') {
+
+            $status = (bool) $_GET["tripleplaypay_payment_success"];
+            $order->payment_complete();
+            $order->reduce_order_stock();
+            
+            WC()->cart->empty_cart();
+            
+            $url = $this->get_return_url($order);
+
+            header("location: $url");
         }
+
+        echo "
+            <div id='tripleplaypay-gateway' style='padding: 25px; margin: auto; text-align: center;'>loading the Triple Play Pay iframe...</div>
+            <script src='https://$this->domain.tripleplaypay.com/static/js/triple.js'></script>
+            <script>
+                try {
+                    new Triple('$this->apikey').generatePaymentForm({
+                        containerSelector: '#tripleplaypay-gateway',
+                        paymentType: '$this->payment_type',
+                        amount: '$amount',
+                        paymentOptions: ['credit_card'],
+                        zipMode: '$this->zip_mode',
+                        phoneOption: false,
+                        emailOption: 'disabled',
+                        savePaymentToken: false,
+                        onSuccess: () => { document.location += '&tripleplaypay_payment_success=true' },
+                        onFailure: (error) => { document.location += '&tripleplaypay_payment_success=false' }
+                    });
+                } catch (error) {
+                    document.getElementById('tripleplaypay-gateway').innerText = 'error rendering the Triple Play Pay iframe, please refresh and try again.';
+                }
+            </script>";
     }
 
     public function process_payment( $order_id ) {
-
-        // simply process the payment, should already be good in TPP backend.
-        // TODO: make this sync with TPP to make sure it's good
-
-        $order = wc_get_order($order_id);
-        $order->payment_complete();
-        $order->reduce_order_stock();
-        $order->add_order_note('Thank you!', true);
-        
-        WC()->cart->empty_cart();
-
-        return [
-            'result' => 'success',
-            'redirect' => $this->get_return_url($order),
-        ];
+        $order = wc_get_order( $order_id );
+		return array(
+			'result'   => 'success',
+			'redirect' => $order->get_checkout_payment_url( true ),
+		);
     }
 }

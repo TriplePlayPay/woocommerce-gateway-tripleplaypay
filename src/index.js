@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { __ } from '@wordpress/i18n';
 import { registerPaymentMethod } from '@woocommerce/blocks-registry';
 
@@ -6,7 +7,7 @@ registerPaymentMethod({
     name: "tripleplaypay",
     label: <img src="https://3playpay.com/wp-content/uploads/2022/05/TPP_logo_reversed_horz3.png" />,
     ariaLabel: __('Triple Play Pay Payment Method', 'woocommerce-gateway-tripleplaypay'),
-    content: <p>Pay via the Triple Play Pay iframe</p>,
-    note: <p>Pay via the Triple Play Pay iframe</p>,
-    supports: { features: data?.supports || [] }
+    content: <></>,
+    edit: <></>,
+    supports: { features: ['products'] }
 });

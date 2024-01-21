@@ -7,7 +7,7 @@ registerPaymentMethod({
     name: "tripleplaypay",
     label: <img src="https://3playpay.com/wp-content/uploads/2022/05/TPP_logo_reversed_horz3.png" />,
     ariaLabel: __('Triple Play Pay Payment Method', 'woocommerce-gateway-tripleplaypay'),
-    content: <></>,
-    edit: <></>,
+    content: <>Triple Play Pay Payment Method</>,
+    edit: <>Triple Play Pay Payment Method</>,
     supports: { features: ['products'] }
 });

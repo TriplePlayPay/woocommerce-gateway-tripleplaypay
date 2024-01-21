@@ -31,6 +31,7 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
         $this->domain = $this->get_option_or('env', 'sandbox'); // default to sandbox if not selected
         $this->allow_ach = $this->get_option_or('allow_ach', 'no');
         $this->zip_mode = $this->get_option_or('zip_mode', 'required');
+        $this->button_text = $this->get_option_or('button_text', '');
         
         add_action('woocommerce_receipt_' . $this->id, [$this, 'receipt_page']);
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, [$this, 'process_admin_options']);
@@ -79,6 +80,12 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
                     'disabled' => 'Disabled',
                 ],
                 'default' => 'required'
+            ],
+            'button_text' => [
+                'title' => 'Payment Button Custom Text',
+                'description' => 'Edit the text content of the PAY button. use ${amount} to insert the price.',
+                'type' => 'text',
+                'default' => ''
             ]
         ];
     }

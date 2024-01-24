@@ -26,6 +26,7 @@ final class WC_TriplePlayPay_Blocks_Support extends AbstractPaymentMethodType {
         $asset_path = WC_GATEWAY_TRIPLEPLAYPAY_PATH . "/build/index.asset.php";
         $version = WC_GATEWAY_TRIPLEPLAYPAY_VERSION;
         $dependencies = [];
+
 		if (file_exists( $asset_path )) {
 			$asset        = require $asset_path;
 			$version      = is_array( $asset ) && isset( $asset['version'] )
@@ -49,7 +50,7 @@ final class WC_TriplePlayPay_Blocks_Support extends AbstractPaymentMethodType {
 
     public function get_payment_method_data() {
         return [
-            'apikey' => $this->get_setting('apikey')
+            'api_key' => $this->get_setting('api_key')
         ];
     }
 }

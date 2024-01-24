@@ -31,10 +31,9 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
         $this->domain = $this->get_option_or('env', 'sandbox'); // default to sandbox if not selected
         $this->allow_ach = $this->get_option_or('allow_ach', 'no');
         $this->zip_mode = $this->get_option_or('zip_mode', 'required');
-        $this->button_text = $this->get_option_or('button_text', '');
         
-        add_action('woocommerce_receipt_' . $this->id, [$this, 'receipt_page']);
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, [$this, 'process_admin_options']);
+        add_action('woocommerce_receipt_' . $this->id, [$this, 'receipt_page']);
     }
 
     public function init_form_fields() {
@@ -86,7 +85,7 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
                 'description' => 'Edit the text content of the PAY button. use ${amount} to insert the price.',
                 'type' => 'text',
                 'default' => ''
-            ]
+            ],
         ];
     }
 
@@ -117,7 +116,9 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
                     width: fit-content;
                 }
             </style>
+
             <div id="tripleplaypay-container">loading...</div>
+            
             <script src="https://{$this->domain}.tripleplaypay.com/static/js/triple.js"></script>
             <script>
                 const paymentOptions = ['credit_card'];
@@ -133,33 +134,12 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
                         email: 'disabled',
                         payBtnText: '{$this->button_text}',
                         savePaymentToken: false,
-                        styles: {
-                        },
+                        styles: {},
                         onSuccess: () => { console.log('nice!') },
                         onError: () => { console.log('oof!') }
                     });
             </script>
         HTML;
-
-        // echo "
-        //     <script src='https://$this->domain.tripleplaypay.com/static/js/triple.js'></script>
-        //     <script>
-        //         try {
-        //             new Triple('$this->api_key').generatePaymentForm({
-        //                 containerSelector: '#tripleplaypay-gateway',
-        //                 paymentType: 'charge',
-        //                 amount: '$amount',
-        //                 paymentOptions: ['credit_card'],
-        //                 phoneOption: false,
-        //                 emailOption: 'disabled',
-        //                 savePaymentToken: false,
-        //                 onSuccess: () => { document.location += '&tripleplaypay_payment_success=true' },
-        //                 onFailure: (error) => { document.location += '&tripleplaypay_payment_success=false' }
-        //             });
-        //         } catch (error) {
-        //             document.getElementById('tripleplaypay-gateway').innerText = 'error rendering the Triple Play Pay iframe, please refresh and try again.';
-        //         }
-        //     </script>";
     }
 
     public function process_payment( $order_id ) {

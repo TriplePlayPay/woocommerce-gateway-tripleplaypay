@@ -31,6 +31,7 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
         $this->domain = $this->get_option_or('env', 'sandbox'); // default to sandbox if not selected
         $this->allow_ach = $this->get_option_or('allow_ach', 'no');
         $this->zip_mode = $this->get_option_or('zip_mode', 'required');
+        $this->use_experimental_form = $this->get_option_or('use_expierimental_form', false);
         
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, [$this, 'process_admin_options']);
         add_action('woocommerce_receipt_' . $this->id, [$this, 'receipt_page']);
@@ -65,8 +66,8 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
                 'description' => 'Enable / Disable ACH transactions',
                 'type' => 'select',
                 'options' => [
-                    'yes' => 'Enable',
-                    'no' => 'Disable'
+                    true => 'Enable',
+                    false => 'Disable'
                 ],
                 'default' => 'no'
             ],
@@ -80,12 +81,16 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
                 ],
                 'default' => 'required'
             ],
-            'button_text' => [
-                'title' => 'Payment Button Custom Text',
-                'description' => 'Edit the text content of the PAY button. use ${amount} to insert the price.',
-                'type' => 'text',
-                'default' => ''
-            ],
+            'use_embedded_form' => [
+                'title' => 'Use Embedded Iframe (EXPERIMENTAL)',
+                'description' => 'Render the payment form on the checkout page',
+                'type' => 'select',
+                'options' => [
+                    true => 'Yes',
+                    false => 'No', 
+                ],
+                'default' => false
+            ]
         ];
     }
 
@@ -107,39 +112,8 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
             header("location: $url");
         }
 
-        // HEREDOC so we can use syntax highlighting
-        echo <<<HTML
-            <style>
-                #tripleplaypay-container {
-                    margin: auto;
-                    overflow: hidden;
-                    width: fit-content;
-                }
-            </style>
-
-            <div id="tripleplaypay-container">loading...</div>
-            
-            <script src="https://{$this->domain}.tripleplaypay.com/static/js/triple.js"></script>
-            <script>
-                const paymentOptions = ['credit_card'];
-                if ('{$this->allow_ach}' === 'yes')
-                    paymentOptions.push('bank');
-
-                new Triple('{$this->api_key}')
-                    .generatePaymentForm({
-                        paymentOptions,
-                        containerSelector: "#tripleplaypay-container",
-                        amount: '{$amount}',
-                        zipMode: '{$this->zip_mode}',
-                        email: 'disabled',
-                        payBtnText: '{$this->button_text}',
-                        savePaymentToken: false,
-                        styles: {},
-                        onSuccess: () => { console.log('nice!') },
-                        onError: () => { console.log('oof!') }
-                    });
-            </script>
-        HTML;
+        require_once dirname(__FILE__) . '/tripleplaypay-gateway-iframe.php';
+        echo render_tripleplaypay_iframe($this);
     }
 
     public function process_payment( $order_id ) {

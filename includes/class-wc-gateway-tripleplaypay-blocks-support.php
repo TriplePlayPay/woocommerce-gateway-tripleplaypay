@@ -2,16 +2,6 @@
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
 
-function snake_to_camel( $string ) {
-    $length = count($string);
-    for ($i = 0; $i < $length; $i++) {
-        if ($string[$i] == '_' && $i < $length - 1) {
-            $string[$i + 1] =  strtoupper($string[$i + 1]);
-        }
-    }
-    return str_replace('_', "", $string);
-}
-
 final class WC_TriplePlayPay_Blocks_Support extends AbstractPaymentMethodType {
 
     protected $name = "tripleplaypay";

@@ -81,11 +81,11 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
                 'default' => 'required'
             ],
             'button_text' => [
-                'title' => 'Text to display on the "PAY" button',
+                'title' => 'PAY Button Text',
                 'description' => 'Show a custom message to customers on the "PAY" button. use ${amount} to insert the total price',
                 'type' => 'text',
                 'default' => 'Pay ${amount}'
-            ]
+            ],
             /*
             'use_embedded_form' => [
                 'title' => 'Use Embedded Iframe (EXPERIMENTAL)',
@@ -103,10 +103,10 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
 
 	public function receipt_page( $order_id ) {
 
-        $status = $_GET["tripleplaypay_iframe_status"];
+        $status_key = "tripleplaypay_iframe_status";
         $order = wc_get_order($order_id); // get the customer's order
 
-        if (isset($status) && $status === "true") {
+        if (isset($_GET[$status_key]) && $_GET[$status_key] === "true") {
             // iframe returned a successful transaction so handle the cart logic
             $order->payment_complete();
             $order->reduce_order_stock();

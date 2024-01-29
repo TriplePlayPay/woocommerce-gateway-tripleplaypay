@@ -1,12 +1,16 @@
 <?php
 
-function render_tripleplaypay_iframe( $options ) {
+function tripleplaypay_iframe( $options, $amount ) {
     return <<<HTML
         <style>
             #tripleplaypay-container {
+                border-radius: 5px;
+                border: 1px solid lightgrey;
                 margin: auto;
-                overflow: hidden;
+                overflow-x: hidden;
+                overflow-y: scroll;
                 width: fit-content;
+                height: fit-content;
             }
         </style>
 
@@ -14,6 +18,13 @@ function render_tripleplaypay_iframe( $options ) {
         
         <script src="https://{$options->domain}.tripleplaypay.com/static/js/triple.js"></script>
         <script>
+
+            const successfulTransaction = () => {
+                const query = new URLSearchParams(window.location.search);
+                query.set('tripleplaypay_iframe_status', true);
+                window.location.search = query;
+            };
+
             const paymentOptions = ['credit_card'];
             if ('{$options->allow_ach}')
                 paymentOptions.push('bank');
@@ -27,9 +38,8 @@ function render_tripleplaypay_iframe( $options ) {
                     email: 'disabled',
                     payBtnText: '{$options->button_text}',
                     savePaymentToken: false,
-                    styles: {},
-                    onSuccess: () => { console.log('nice!') },
-                    onError: () => { console.log('oof!') }
+                    onSuccess: () => successfulTransaction(),
+                    onError: (error) => document.getElementById('tpp_error').innerText = error,message;
                 });
         </script>
     HTML;

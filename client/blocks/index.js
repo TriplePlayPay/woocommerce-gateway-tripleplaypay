@@ -31,7 +31,7 @@ const Label = () => {
     );
 };
 
-const Content = () => {
+const Content = (props) => {
 
     if (data.useEmbeddedForm) {
         const triple = new Triple(data.apiKey);
@@ -47,7 +47,7 @@ const Content = () => {
                     display: 'none'
                 }
             },
-            amount: 1, // still gotta figure out how to get this
+            amount: price || '0.00'
         };
     
         useEffect(() => { // wait until everything is mounted
@@ -58,11 +58,13 @@ const Content = () => {
     }
 
     // if not using the embedded form, use the "seperate payment page" option
-    return <span>Use the <i>Triple Play Pay</i> iframe to complete your payment</span>; 
+    return <span>Complete your payment using the <i>Triple Play Pay</i> iframe</span>; 
 };
 
 registerPaymentMethod({
-    canMakePayment: () => {
+    canMakePayment: (/*{ cart }*/) => {
+        // console.log(cart);
+        // TODO: figure out how to extract cart total
         return true;
     },
     name: "tripleplaypay",

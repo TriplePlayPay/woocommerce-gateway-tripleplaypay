@@ -1,9 +1,8 @@
 <?php
 
+define("IFRAME_STATUS", "tripleplaypay_iframe_status");
 
 class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
-
-    public $version;
 
     private function get_option_or($option, $default) {
         $value = $this->get_option($option);
@@ -27,9 +26,10 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
         $this->init_settings(); // retrieve the settings' values
 
         $this->api_key = $this->get_option_or('api_key', 'testapikey');
+        $this->allow_ach = $this->get_option_or('allow_ach', false);
         $this->domain = $this->get_option_or('env', 'sandbox'); // default to sandbox if not selected
-        $this->allow_ach = $this->get_option_or('allow_ach', 'no');
         $this->zip_mode = $this->get_option_or('zip_mode', 'required');
+        $this->button_text = $this->get_option_or('button_text', 'Pay ${amount}');
         $this->use_experimental_form = $this->get_option_or('use_expierimental_form', false);
         
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, [$this, 'process_admin_options']);
@@ -68,7 +68,7 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
                     true => 'Enable',
                     false => 'Disable'
                 ],
-                'default' => 'no'
+                'default' => false
             ],
             'zip_mode' => [
                 'title' => 'ZIP Code Input',
@@ -80,39 +80,44 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
                 ],
                 'default' => 'required'
             ],
+            'button_text' => [
+                'title' => 'Text to display on the "PAY" button',
+                'description' => 'Show a custom message to customers on the "PAY" button. use ${amount} to insert the total price',
+                'type' => 'text',
+                'default' => 'Pay ${amount}'
+            ]
+            /*
             'use_embedded_form' => [
                 'title' => 'Use Embedded Iframe (EXPERIMENTAL)',
                 'description' => 'Render the payment form on the checkout page',
                 'type' => 'select',
                 'options' => [
-                    true => 'Yes',
                     false => 'No', 
+                    true => 'Yes'
                 ],
                 'default' => false
             ]
+            */
         ];
     }
 
 	public function receipt_page( $order_id ) {
 
-        $order = wc_get_order($order_id);
-        $amount = $order->get_total();
+        $status = $_GET["tripleplaypay_iframe_status"];
+        $order = wc_get_order($order_id); // get the customer's order
 
-        $key = "tripleplaypay_payment_success";
-        if (isset($_GET[$key]) && $_GET[$key] === 'true') {
-
+        if (isset($status) && $status === "true") {
+            // iframe returned a successful transaction so handle the cart logic
             $order->payment_complete();
             $order->reduce_order_stock();
-            
             WC()->cart->empty_cart();
-            
-            $url = $this->get_return_url($order);
 
-            header("location: $url");
+            // Go to the completed order page
+            wp_redirect($this->get_return_url($order));
         }
 
         require_once dirname(__FILE__) . '/tripleplaypay-gateway-iframe.php';
-        echo render_tripleplaypay_iframe($this);
+        echo tripleplaypay_iframe($this, $order->get_total());
     }
 
     public function process_payment( $order_id ) {

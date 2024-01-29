@@ -1,7 +1,9 @@
 import { registerPaymentMethod } from '@woocommerce/blocks-registry';
 import { getSetting } from '@woocommerce/settings';
-import { useEffect } from 'react';
+
 import Triple from './triple.js';
+
+import { useState, useEffect } from 'react';
 
 const logoSrc = "https://www.tripleplaypay.com/dist/api/images/TPP_logo_white_icon.png";
 const data = getSetting('tripleplaypay_data');
@@ -9,17 +11,15 @@ const data = getSetting('tripleplaypay_data');
 const Label = () => {
 
     const tabStyle = {
-        border: '1px solid grey',
+        paddingRight: '16px',
         borderRadius: '5px',
-        marginRight: '16px',
-        padding: '16px',
         width: '100%',
     };
 
     const imgStyle = { 
         borderRadius: '5px',
-        background: 'orange',
-        border: '1px solid grey',
+        background: '#F8951F',
+        border: '1px solid lightgrey',
         float: 'right'
     };
 
@@ -52,24 +52,23 @@ const Content = () => {
     
         useEffect(() => { // wait until everything is mounted
             triple.generatePaymentForm(tripleConfig);
-        }, [])
+        }, []);
     
         return <div id="tripleplaypay-gateway" style={{textAlign: 'center'}}>Loading...</div>;
     }
 
     // if not using the embedded form, use the "seperate payment page" option
-    return <p>Use the <i>Triple Play Pay</i> iframe to complete the payment</p>; 
+    return <span>Use the <i>Triple Play Pay</i> iframe to complete your payment</span>; 
 };
 
 registerPaymentMethod({
-    canMakePayment: ({ cart }) => {
-        console.log(cart);
+    canMakePayment: () => {
         return true;
     },
     name: "tripleplaypay",
     label: <Label />,
     ariaLabel: 'Triple Play Pay',
     content: <Content />,
-    edit: <Content />,
+    edit: <></>,
     supports: { features: ['products'] }
 });

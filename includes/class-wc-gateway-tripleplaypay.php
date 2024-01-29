@@ -3,7 +3,6 @@
 
 class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
 
-    protected $api_key;
     public $version;
 
     private function get_option_or($option, $default) {

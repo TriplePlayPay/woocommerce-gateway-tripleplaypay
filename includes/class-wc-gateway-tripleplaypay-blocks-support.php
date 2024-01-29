@@ -2,6 +2,16 @@
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
 
+function snake_to_camel( $string ) {
+    $length = count($string);
+    for ($i = 0; $i < $length; $i++) {
+        if ($string[$i] == '_' && $i < $length - 1) {
+            $string[$i + 1] =  strtoupper($string[$i + 1]);
+        }
+    }
+    return str_replace('_', "", $string);
+}
+
 final class WC_TriplePlayPay_Blocks_Support extends AbstractPaymentMethodType {
 
     protected $name = "tripleplaypay";
@@ -50,7 +60,10 @@ final class WC_TriplePlayPay_Blocks_Support extends AbstractPaymentMethodType {
 
     public function get_payment_method_data() {
         return [
-            'api_key' => $this->get_setting('api_key')
+            'apiKey' => $this->get_setting('api_key'),
+            'env' => $this->get_setting('env'),
+            'allowAch' => $this->get_setting('allow_ach'),
+            'zipMode' => $this->get_setting('zip_mode')
         ];
     }
 }

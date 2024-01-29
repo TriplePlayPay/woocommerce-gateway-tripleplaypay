@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "wp-scripts build src/index.js"
+    "build": "wp-scripts build client/blocks/index.js"
   },
   "author": "",
   "license": "ISC",

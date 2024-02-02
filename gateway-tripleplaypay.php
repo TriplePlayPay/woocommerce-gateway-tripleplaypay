@@ -27,8 +27,6 @@ function woocommerce_tripleplaypay_init() {
     add_filter('woocommerce_payment_gateways', 'woocommerce_tripleplaypay_add_gateway');
 }
 
-
-
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'woocommerce_tripleplaypay_action_links');
 function woocommerce_tripleplaypay_action_links( $links ) {
     // add custom links to the plugin page
@@ -70,9 +68,6 @@ function woocommerce_tripleplaypay_blocks_support() {
         );
     }
 }
-
-
-
 
 // add gateway to global list
 function woocommerce_tripleplaypay_add_gateway( $methods ) {

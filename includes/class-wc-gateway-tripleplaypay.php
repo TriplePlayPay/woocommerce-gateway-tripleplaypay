@@ -45,8 +45,8 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
                 'default' => 'no'
             ],
             'api_key' => [
-                'title' => 'Triple Play Pay API Key',
-                'description' => 'The API Key for your Triple Play Pay account',
+                'title' => 'Triple Play Pay Client API Key',
+                'description' => 'The API Key is required to use the iframe',
                 'type' => 'text',
                 'default' => ''
             ],
@@ -79,25 +79,7 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
                     'disabled' => 'Disabled',
                 ],
                 'default' => 'required'
-            ],
-            'button_text' => [
-                'title' => 'PAY Button Text',
-                'description' => 'Show a custom message to customers on the "PAY" button. use ${amount} to insert the total price',
-                'type' => 'text',
-                'default' => 'Pay ${amount}'
-            ],
-            /*
-            'use_embedded_form' => [
-                'title' => 'Use Embedded Iframe (EXPERIMENTAL)',
-                'description' => 'Render the payment form on the checkout page',
-                'type' => 'select',
-                'options' => [
-                    false => 'No', 
-                    true => 'Yes'
-                ],
-                'default' => false
             ]
-            */
         ];
     }
 
@@ -116,7 +98,7 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
             wp_redirect($this->get_return_url($order));
         }
 
-        require_once dirname(__FILE__) . '/tripleplaypay-gateway-iframe.php';
+        
         echo tripleplaypay_iframe($this, $order->get_total());
     }
 

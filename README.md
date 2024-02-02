@@ -1,11 +1,9 @@
 # WooCommerce Triple Play Pay Gateway
-Clone this repository to the `plugins/` directory.
-```
-cd .../wp-content/plugins
-git clone https://github.com/TriplePlayPay/woocommerce-gateway-tripleplaypay.git
-```
-Then, build the JavaScript in order to support Woo 8.4 blocks
-```
-npm install
-npm run build
-```
+
+We are working on getting this plugin into the `Wordpress Plugin Store`, for now follow these instructions to install our extension:
+1. Download the ZIP file from the `releases` tab
+2. Move the ZIP file into your Wordpress `wp-content/plugins/` folder
+3. Unzip the file, you can delete the ZIP file now
+4. On the Admin Dashboard for Wordpress
+  - activate WooCommerce
+  - activate WooCommerce Triple Play Pay Gateway

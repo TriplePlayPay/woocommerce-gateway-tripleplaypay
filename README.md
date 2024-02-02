@@ -26,3 +26,48 @@ We are working on getting this plugin into the _Wordpress Plugin Store_, for now
 ![step5](images/step5.png)
 6. You can see the setting we changed earlier has shown up in the iframe
 ![step6](images/step6.png)
+
+# List of supported iframe CSS features
+- Container Border
+- Pay Button:
+    - Background
+    - Color
+    - Border Radius
+    - Font Size
+    - Active:
+        - Background
+        - Color
+    - Hover:
+        - Background
+        - Color    
+- Text Inputs:
+    - Background
+    - Color
+    - Border Color
+    - Border Width
+    - Border Radius
+    - Height
+    - Font Size
+    - Font Weight
+    - Focused:
+        - Color
+        - Border Color
+        - Background
+    - Error:
+        - Color
+        - Border Color
+        - Background
+    - Placeholder:
+        - Color
+        - Font Size
+        - Font Weight
+    - Error Text: 
+        - Color
+        - Font Size
+- Radio Buttons:
+    - Background
+    - Color
+    - BorderColor
+    - Checked:
+        - Color
+        - BorderColor

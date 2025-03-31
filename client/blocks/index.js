@@ -57,14 +57,12 @@ const Content = (props) => {
         return <div id="tripleplaypay-gateway" style={{textAlign: 'center'}}>Loading...</div>;
     }
 
-    // if not using the embedded form, use the "seperate payment page" option
-    return <span>Complete your payment using the <i>Triple Play Pay</i> iframe</span>; 
+    // if not using the embedded form, use the "separate payment page" option
+    return <span>Complete Your Payment Here</span>;
 };
 
 registerPaymentMethod({
-    canMakePayment: (/*{ cart }*/) => {
-        // console.log(cart);
-        // TODO: figure out how to extract cart total
+    canMakePayment: () => {
         return true;
     },
     name: "tripleplaypay",

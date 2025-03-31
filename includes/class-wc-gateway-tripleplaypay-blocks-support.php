@@ -53,7 +53,10 @@ final class WC_TriplePlayPay_Blocks_Support extends AbstractPaymentMethodType {
             'apiKey' => $this->get_setting('api_key'),
             'env' => $this->get_setting('env'),
             'allowAch' => $this->get_setting('allow_ach'),
-            'zipMode' => $this->get_setting('zip_mode')
+            'allowCard' => $this->get_setting('allow_card'),
+            'allowCrypto' => $this->get_setting('allow_crypto'),
+            'zipMode' => $this->get_setting('zip_mode'),
+            'emailMode' => $this->get_setting('email_mode'),
         ];
     }
 }

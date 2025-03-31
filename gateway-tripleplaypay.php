@@ -21,7 +21,7 @@ add_action('plugins_loaded', 'woocommerce_tripleplaypay_init', 0);
 function woocommerce_tripleplaypay_init() {
     if (! class_exists('WC_Payment_Gateway')) return; // WooCommerce Plugin must be installed    
 
-    require_once plugin_basename('includes/class-wc-gateway-tripleplaypay-iframe-settings.php');
+    //    require_once plugin_basename('includes/class-wc-gateway-tripleplaypay-iframe-settings.php');
     require_once plugin_basename('includes/tripleplaypay-gateway-iframe.php');
     require_once plugin_basename('includes/class-wc-gateway-tripleplaypay.php');
     add_filter('woocommerce_payment_gateways', 'woocommerce_tripleplaypay_add_gateway');

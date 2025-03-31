@@ -59,6 +59,12 @@ function tripleplaypay_iframe( $options, $amount ) {
     $checked_radio_border_color = get_option('tripleplaypay_checked_radio_border_color');
     $checked_radio_color = get_option('tripleplaypay_checked_radio_color');
 
+    if ($options->domain == "sandbox") {
+        $scriptSource = '<script src="https://tripleplaypay.com/static/js/sandbox.js"></script>';
+    } else {
+        $scriptSource = '<script src="https://tripleplaypay.com/static/js/triple.js"></script>';
+    }
+
     return <<<HTML
         <style>
             #tripleplaypay-sandbox-warning {
@@ -71,7 +77,7 @@ function tripleplaypay_iframe( $options, $amount ) {
                 margin: auto;
                 overflow-x: hidden;
                 overflow-y: scroll;
-                width: fit-content;
+                width: 100%;
                 background: white;
                 padding: 5px;
             }
@@ -80,7 +86,7 @@ function tripleplaypay_iframe( $options, $amount ) {
         <p id="tripleplaypay-sandbox-warning"></p>
         <div id="tripleplaypay-container">loading...</div>
         
-        <script src="https://{$options->domain}.tripleplaypay.com/static/js/triple.js"></script>
+        '{$scriptSource}'
         <script>
 
             const container = document.getElementById('tripleplaypay-container');
@@ -92,9 +98,16 @@ function tripleplaypay_iframe( $options, $amount ) {
                 window.location.search = query;
             };
 
-            const paymentOptions = ['credit_card'];
+            const paymentOptions = [];
+            
+            if ({$options->allow_card})
+                paymentOptions.push('credit_card');
+                        
             if ({$options->allow_ach})
                 paymentOptions.push('bank');
+            
+            if ({$options->allow_crypto})
+                paymentOptions.push('crypto');
 
             if ('{$options->domain}' == 'sandbox') {
                 const element = document.getElementById('tripleplaypay-sandbox-warning');
@@ -108,7 +121,8 @@ function tripleplaypay_iframe( $options, $amount ) {
                     containerSelector: "#tripleplaypay-container",
                     amount: '{$amount}',
                     zipMode: '{$options->zip_mode}',
-                    email: 'disabled',
+                    phoneOption: false,
+                    emailOption: '{$options->email_mode}',
                     payBtnText: '{$options->button_text}',
                     savePaymentToken: false,
                     styles: {

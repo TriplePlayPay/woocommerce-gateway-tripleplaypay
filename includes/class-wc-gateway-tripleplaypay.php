@@ -25,10 +25,13 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
         $this->init_form_fields(); // initialize the field schema
         $this->init_settings(); // retrieve the settings' values
 
-        $this->api_key = $this->get_option_or('api_key', 'testapikey');
+        $this->api_key = $this->get_option_or('api_key', '');
         $this->allow_ach = $this->get_option_or('allow_ach', false);
-        $this->domain = $this->get_option_or('env', 'sandbox'); // default to sandbox if not selected
-        $this->zip_mode = $this->get_option_or('zip_mode', 'required');
+        $this->allow_card = $this->get_option_or('allow_card', false);
+        $this->allow_crypto = $this->get_option_or('allow_crypto', false);
+        $this->domain = $this->get_option_or('env', 'www'); // default to production
+        $this->zip_mode = $this->get_option_or('zip_mode', 'disabled');
+        $this->email_mode = $this->get_option_or('email_mode', 'required');
         $this->button_text = $this->get_option_or('button_text', 'Pay ${amount}');
         $this->use_experimental_form = $this->get_option_or('use_expierimental_form', false);
         
@@ -45,8 +48,8 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
                 'default' => 'no'
             ],
             'api_key' => [
-                'title' => 'Triple Play Pay Client API Key',
-                'description' => 'The API Key is required to use the iframe',
+                'title' => 'Triple Play Pay Client Public Key',
+                'description' => 'The Public Key is required to use the iframe',
                 'type' => 'text',
                 'default' => ''
             ],
@@ -58,7 +61,7 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
                     'sandbox' => 'Testing (Development)',
                     'www' => 'Live (Production)',
                 ],
-                'default' => 'sandbox'
+                'default' => 'www'
             ],
             'allow_ach' => [
                 'title' => 'ACH',
@@ -70,9 +73,39 @@ class WC_Gateway_TriplePlayPay extends WC_Payment_Gateway {
                 ],
                 'default' => false
             ],
+            'allow_crypto' => [
+                'title' => 'Crypto',
+                'description' => 'Enable / Disable Crypto transactions',
+                'type' => 'select',
+                'options' => [
+                    true => 'Enable',
+                    false => 'Disable'
+                ],
+                'default' => false
+            ],
+            'allow_card' => [
+                'title' => 'Card',
+                'description' => 'Enable / Disable Card transactions',
+                'type' => 'select',
+                'options' => [
+                    true => 'Enable',
+                    false => 'Disable'
+                ],
+                'default' => false
+            ],
             'zip_mode' => [
                 'title' => 'ZIP Code Input',
                 'description' => 'Display ZIP Code input on the payment form',
+                'type' => 'select',
+                'options' => [
+                    'required' => 'Enabled',
+                    'disabled' => 'Disabled',
+                ],
+                'default' => 'required'
+            ],
+            'email_mode' => [
+                'title' => 'Email Mode',
+                'description' => 'Displays Email input on the payment form. Crypto payments cannot work without this.',
                 'type' => 'select',
                 'options' => [
                     'required' => 'Enabled',
